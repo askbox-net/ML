@@ -46,7 +46,7 @@ class simple_model(object):
 
         self.early_stopping = tf.keras.callbacks.EarlyStopping(
                 monitor='val_loss',
-                min_delta=0.0,
+                min_delta=0,
                 patience=2
                 )
 
@@ -55,7 +55,7 @@ class simple_model(object):
                 X,
                 y,
                 batch_size = 4,
-                epochs = 5000,
+                epochs = 4000,
                 #validation_data=(X, y),
                 callbacks = [self.checkpoint, self.early_stopping]
                 )
@@ -66,22 +66,21 @@ class simple_model(object):
         print('test_loss:', test_loss)
         print('test_acc:', test_acc)
         predict_y = self.model.predict(X)
-        threshold = 0.5
-        print("thresholded predict_y:", (predict_y > threshold).astype(np.int))
+        print(list(map(lambda x: x.argmax(), predict_y)))
 
 
 if __name__ == '__main__':
     # OR
     x_or = np.array([
-        [0.0, 0.0],
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 1.0]])
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1]])
     y_or = np.array([
-        [0.0, 0.0],
-        [1.0, 0.0],
-        [1.0, 0.0],
-        [1.0, 0.0]])
+        [1, 0],
+        [0, 1],
+        [0, 1],
+        [0, 1]])
     param = {
         'model_filename': 'or'
     }
@@ -91,15 +90,15 @@ if __name__ == '__main__':
 
     # AND
     x_and = np.array([
-        [0.0, 0.0],
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 1.0]])
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1]])
     y_and = np.array([
-        [0.0, 0.0],
-        [0.0, 0.0],
-        [0.0, 0.0],
-        [1.0, 0.0]])
+        [1, 0],
+        [1, 0],
+        [1, 0],
+        [0, 1]])
     param = {
         'model_filename': 'and'
     }
@@ -109,15 +108,15 @@ if __name__ == '__main__':
 
     # XOR
     x_xor = np.array([
-        [0.0, 0.0],
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 1.0]])
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1]])
     y_xor = np.array([
-        [0.0, 0.0],
-        [1.0, 0.0],
-        [1.0, 0.0],
-        [0.0, 0.0]])
+        [1, 0],
+        [0, 1],
+        [0, 1],
+        [1, 0]])
     param = {
         'model_filename': 'xor'
     }

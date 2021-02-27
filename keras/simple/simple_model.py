@@ -8,58 +8,57 @@ import tensorflow as tf
 
 
 class simple_model(object):
-    def __init__(self, input_dim=2, units=3, model_filename='simple_model'):
+    def __init__(self, input_dim=2, output_units=2, model_filename='simple_model'):
         self.model_filename = model_filename
         self.model = Sequential()
         self.model.add(
                 Dense(
-                    activation = 'sigmoid',
-                    input_dim = input_dim,
-                    units = units
+                    activation='sigmoid',
+                    input_dim=input_dim,
+                    units=input_dim + 1
                     )
                 )
         self.model.add(
                 Dense(
-                    units = 2,
-                    activation = 'sigmoid'
+                    units=output_units,
+                    activation='sigmoid'
                     )
                 )
         self.model.compile(
-                loss = 'mean_squared_error',
-                optimizer = RMSprop(),
-                metrics = ['accuracy']
+                loss='mean_squared_error',
+                optimizer=RMSprop(),
+                metrics=['accuracy']
                 )
-        with open('%s.json' % model_filename, 'w') as fp:
+        with open('%s.json' % self.model_filename, 'w') as fp:
             fp.write(self.model.to_json())
-        """
+
         self.checkpoint = tf.keras.callbacks.ModelCheckpoint(
-            filepath='%s.h5' % model_filename,
-            save_weights_only=True,
-            #monitor='val_accuracy',
-            #mode='max',
-            save_best_only=True)
-        """
-        self.checkpoint = tf.keras.callbacks.ModelCheckpoint(
-                filepath='%s.h5' % model_filename,
+                filepath='%s.h5' % self.model_filename,
                 save_weights_only=True,
-                verbose=0)
+                monitor='val_accuracy',
+                mode='max',
+                save_best_only=True,
+                verbose=1)
 
         self.early_stopping = tf.keras.callbacks.EarlyStopping(
                 monitor='val_loss',
-                min_delta=0,
-                patience=2
+                #monitor='loss,accuracy',
+                #monitor='accuracy',
+                #min_delta=0,
+                patience=3
                 )
 
-    def fit(self, X, y):
+    def fit(self, X_train, y_train):
         self.history = self.model.fit(
                 X,
                 y,
-                batch_size = 4,
-                epochs = 4000,
+                batch_size=4,
+                epochs=2000,
                 #validation_data=(X, y),
-                callbacks = [self.checkpoint, self.early_stopping]
+                verbose=1,
+                callbacks=[self.checkpoint, self.early_stopping]
                 )
-        self.model.save_weights('simple_model.h5')
+        self.model.save_weights(self.model_filename)
 
     def evaluate(self, X, y):
         test_loss, test_acc = self.model.evaluate(X, y, verbose=0)

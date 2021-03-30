@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
-from torch import nn
 
 
 class Simple(nn.Module):
@@ -21,14 +21,14 @@ class Simple(nn.Module):
     def fit(self, x_train, y_train):
         criterion = nn.MSELoss()
 
-        optimizer = optim.SGD(model.parameters(), lr=0.1)
+        optimizer = optim.SGD(self.parameters(), lr=0.1)
 
         x = torch.Tensor(x_train)
         y = torch.Tensor(y_train)
 
         self.train()
         for i in range(5001):
-            output = model(x)
+            output = self.__call__(x)
             loss = criterion(output, y)
 
             optimizer.zero_grad()
@@ -42,7 +42,7 @@ class Simple(nn.Module):
         for x in x_data:
             print(x)
             x_in = torch.Tensor(x)
-            y_out = model(x_in)
+            y_out = self.__call__(x_in)
             y = y_out.data
             print("%d %d = %f %f" % (x[0], x[1], y[0], y[1]))
 
